@@ -1,8 +1,14 @@
 const Hello = (props) => {
+  const {name, age} = props
+
+  const bornYear = () => new Date().getFullYear()- age;
+  
   console.log(props)
+  
   return (
     <div>
-      <p>Hello {props.name} you are {props.age} years old.</p>
+      <p>Hello {name} you are {age} years old.</p>
+      <p>You were probably born in {bornYear()}</p>
     </div>
   )
 }
