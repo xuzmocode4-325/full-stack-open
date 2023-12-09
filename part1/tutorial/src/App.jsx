@@ -28,7 +28,7 @@ const WrapHello = ({data, counter}) => {
   )
 }
 
-const Display = ({counter}) => <div>{counter}</div>
+const Display = ({value}) => <div>{value}</div>
 const Button = ({onClick,text}) => <button onClick={onClick}>{text}</button>
 
 
@@ -93,8 +93,6 @@ const App = () => {
   const setToZero = () => setCounter(0)
   const minusOne = () => setCounter(counter -1)
 
-
-
   const handleLeftClick = () => {
     setAll(allClicks.concat('L'))
     setClicks({...clicks, left: clicks.left+2, right: clicks.right -1})
@@ -121,10 +119,17 @@ const App = () => {
     setTotal(updatedLength)
   }}
 
+  const hello = (who) => () => console.log('hello', who)
+  const [someValue, setValue] = useState(10)
+
+  const setToValue = (newValue) => () => {
+    console.log('value now', newValue)  // print the new value to console
+    setValue(newValue)
+  }
   return (
     <div>
       <h1>Greetings</h1>
-      <Display counter={counter}/>
+      <Display value={counter}/>
       <WrapHello data={peeps} counter={counter} />
       <CounterButtons add={addOne} zero={setToZero} minus={minusOne}/> 
       <p>
@@ -135,6 +140,15 @@ const App = () => {
         center={handleCenterClick}
         right={handleRightClick}/>
       <History allClicks={allClicks} total={total}/>
+      <div>
+        <Display value={someValue}/>
+        <Button onClick={hello('react developer')} text='button'/>
+        <Button onClick={setToValue(1000)} text='thousand'/>
+        <Button onClick={setToValue(0)} text='reset'/>
+        <Button onClick={setToValue(someValue + 1)} text='+ 1'/>
+        <Button onClick={setToValue(someValue - 1)} text='- 1'/>
+      </div>
+      
     </div>
   )
 }
