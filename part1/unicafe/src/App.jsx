@@ -19,6 +19,15 @@ const Buttons = ({good, neutral, bad}) => {
 }
 const Statistics = ({data}) => {
   console.log(data.good, data.neutral, data.bad)
+  if (data.good === 0 & data.neutral === 0 & data.bad === 0) {
+    return (
+      <div>
+        <h3>Statistics</h3>
+        <p>No feedback given</p>
+      </div>
+     
+    )
+  }
   return (
     <div>
       <h3>Statistics</h3>
