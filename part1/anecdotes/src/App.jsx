@@ -1,10 +1,36 @@
 import { useState } from 'react'
 
-const Display = ({text, selected}) => {
-  console.log(text[selected])
+const Heading = (props) => {
+  console.log(props)
   return (
-      <p>{text[selected]}</p>
+    <h1>{props.title}</h1>
   )
+}
+
+const Display = ({input, popular}) => {
+  console.log(input, popular)
+  const text = input.text
+  const selected = input.selected
+  const votes = input.votes 
+  if (popular) {
+    const mostVoted = votes.indexOf(Math.max(...votes));
+    console.log('most popular', mostVoted)
+    return (
+      <div>
+        <p>{text[mostVoted]}</p>
+        <p>This anecdote has {votes[mostVoted]} vote(s).</p>
+      </div>
+    )
+  }
+  else {
+    return (
+      <div>
+        <p>{text[selected]}</p>
+        <p>This anecdote has {votes[selected]} vote(s).</p>
+      </div>
+    )
+  }
+  
 }
 
 const Button = ({onClick, text}) => {
@@ -26,13 +52,33 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+
   const handleNewAnecdote = () => setSelected(Math.floor(Math.random() * anecdotes.length));
+  const handleNewVote = (current) => () => {
+    console.log('current value', votes[current])
+    const newVotes = [...votes]
+    console.log('new votes array', newVotes)
+    newVotes[current] += 1
+    console.log('updated vote value', newVotes[current])
+    console.log('updated votes array', newVotes) 
+    setVotes(newVotes)
+  }
+
+  const displayInput = {
+    'text': anecdotes,
+    'selected': selected,
+    'votes': votes,
+  }
 
   return (
     <div>
-      <Display text={anecdotes} selected={selected}  />
+      <Heading title='Anecdote of The Day'/>
+      <Display  input={displayInput} popular={false}/>
+      <Button onClick={handleNewVote(selected)} text='Vote'/>
       <Button onClick={handleNewAnecdote} text='New Anecdote'/>
-
+      <Heading title='Most Popular Anecdote'/>
+      <Display  input={displayInput} popular={true}/>
     </div>
   )
 }
