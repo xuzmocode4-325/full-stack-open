@@ -37,14 +37,7 @@ const App = () => {
       setPersons(newPersons)
       setNewName('')
     }
-
-  
-  
   }
-
-  
-
-
       
   return (
     <div>
@@ -65,8 +58,7 @@ const App = () => {
         {persons.map(person => 
           <Contact key={person.name} person={person}
         />)}
-    </div>
-    
+    </div> 
   )
 }
 
