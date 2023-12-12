@@ -1,4 +1,6 @@
-const Search = ({value, onChange}) => {
+const Search = (props) => {
+    console.log('from search', props)
+    const {value, onChange} = props
     return (
       <div>
           search: 
@@ -10,4 +12,4 @@ const Search = ({value, onChange}) => {
     )
 }
 
-export default Search
+export default Search;

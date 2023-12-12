@@ -1,18 +1,19 @@
 import Field from "./Field"
 
 const Form = (props) => {
-    console.log(props)
+    console.log('from form', props)
+    const {newName, newNumber, onSubmit, handleName, handleNumber} = props
     return (
       <div>
         <h3>Add New</h3>
-        <form  onSubmit={props.onSubmit}> 
+        <form  onSubmit={onSubmit}> 
           <Field 
             input='name' 
-            value={props.newName} 
+            value={newName} 
             onChange={handleName}/>
           <Field 
             input='number' 
-            value={props.newNumber} 
+            value={newNumber} 
             onChange={handleNumber}/>
           <div>
             <button type="submit">Add Contact</button>
@@ -21,3 +22,5 @@ const Form = (props) => {
       </div>
     )
   }
+
+  export default Form;

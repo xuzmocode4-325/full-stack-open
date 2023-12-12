@@ -1,11 +1,12 @@
 const Field = (props) => {
-    console.log(props)
+    console.log('from field', props)
+    const {input, value, onChange} = props
     return (
       <div>
-            {props.input}
+            {input}
             <input 
-              value={props.value}
-              onChange={props.onChange}
+              value={value}
+              onChange={onChange}
             />
       </div>
     )

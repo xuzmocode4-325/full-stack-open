@@ -1,7 +1,16 @@
-import Contact from "./Contact";
+const Contact = (props) => {
+  console.log('from contact', props)
+  const {person} = props
+  return (
+    <div>
+      {person.name} {person.number}
+    </div>
+  )
+}
 
-const Display = ({persons}) => {
-    console.log(persons)
+const Display = (props) => {
+    console.log('from display', props)
+    const {persons} = props
     return (
       <div>
         <h3>Contacts</h3>
