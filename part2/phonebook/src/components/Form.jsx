@@ -1,7 +1,7 @@
 import Field from "./Field"
 
 const Form = (props) => {
-    console.log('from form', props)
+    //console.log('from form', props)
     const {newName, newNumber, onSubmit, handleName, handleNumber} = props
     return (
       <div>

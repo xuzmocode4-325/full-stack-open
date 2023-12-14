@@ -1,5 +1,5 @@
 const Field = (props) => {
-    console.log('from field', props)
+    //console.log('from field', props)
     const {input, value, onChange} = props
     return (
       <div>

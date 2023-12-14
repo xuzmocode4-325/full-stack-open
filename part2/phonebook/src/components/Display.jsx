@@ -1,24 +1,29 @@
 const Contact = (props) => {
-  console.log('from contact', props)
-  const {person} = props
+  const {person, onClick} = props
+  //console.log(props)
   return (
     <div>
-      {person.name} {person.number}
+        {person.name} {person.number} 
+        <button onClick={onClick}>
+          delete
+        </button>
     </div>
   )
 }
 
 const Display = (props) => {
-    console.log('from display', props)
-    const {persons} = props
+    const {persons, handleDelete} = props
+    //console.log(props)
     return (
       <div>
         <h3>Contacts</h3>
           {persons.map(person => 
-            <Contact key={person.id} person={person}
+            <Contact 
+              key={person.id} 
+              person={person} 
+              onClick={() => handleDelete(person.id)}
           />)}
       </div>
-      
     )
 }
 
