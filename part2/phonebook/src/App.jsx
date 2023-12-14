@@ -3,12 +3,15 @@ import Search from './components/Search'
 import Display from './components/Display'
 import Form from './components/Form'
 import contactService from './services/contacts'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newNumber, setNewNumber] = useState('')
   const [newName, setNewName] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [newNotification, setNotification] = useState({
+    content: null, type:null})
 
   const hook = () => {
     console.log('effect')
@@ -67,7 +70,30 @@ const App = () => {
         .then(returnedContact => {
           setPersons(persons.map(p => p.id !== id? p :returnedContact))
         })
-
+        .catch(error => {
+          const errorObject = {
+            content: `A listing for ${newName} no longer exists`,
+            type: 0
+          }
+          setNotification(errorObject)
+          setTimeout(() => {
+            setNotification({
+              content: null,
+              type: null
+            })
+          }, 5000)
+        })
+        const updateNotification = {
+          content: `Update to ${newName} contact successful`,
+          type: 1
+        }
+        setNotification(updateNotification)
+        setTimeout(() => {
+          setNotification({
+            content: null,
+            type: null
+          })
+        }, 5000)
       }
     } else {
       contactService
@@ -76,6 +102,17 @@ const App = () => {
         console.log(newContact)
         setPersons(persons.concat(newContact))
       })
+      const addNotification = {
+        content: `Successfully added ${newName} to contacts`,
+        type: 1
+      }
+      setNotification(addNotification)
+      setTimeout(() => {
+        setNotification({
+          content: null,
+          type: null
+        })
+      }, 5000)
     }
     setNewName('')
     setNewNumber('')
@@ -92,15 +129,36 @@ const App = () => {
       contactService
       .removeContact(id)
       .then(returnedPerson => {
-        alert(`${personToDelete.name} deleted`)
+        const deleteNotification = {
+          content: `${personToDelete.name} deleted`,
+          type: 1
+        } 
+        setNotification(
+          deleteNotification
+        )
+        setTimeout(() => {
+          setNotification({
+            content: null,
+            type: null
+          })
+        }, 5000)
+        
         setPersons(persons.filter(p => p.id !== id))
       })
       .catch(error => {
-        alert(
-          `the contact '${person.name}' was already deleted from server`
-        )
-        setPersons(persons.filter(p => p.id !== id))
-      })
+        const errorObject = {
+          message: `Note '${person.name}' has already been removed`,
+          type: 0
+        }
+        setNotification(errorObject)
+        setTimeout(() => {
+          setNotification({
+            content: null,
+            type: null
+          })
+        }, 5000)
+        setNotes(notes.filter(n => n.id !== id))
+      }) 
       console.log(`instance of ${id} needs to be deleted`)
     }
   }
@@ -113,6 +171,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={newNotification}/>
       <Search 
           value={newSearch}
           onChange={handleSearchInput}

@@ -2,7 +2,7 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "011-465-9834",
+      "number": "084-865-7584",
       "id": 1
     },
     {
@@ -12,7 +12,7 @@
     },
     {
       "name": "Dan Abramov",
-      "number": "12-43-234345",
+      "number": "098-142-1420",
       "id": 3
     },
     {
@@ -21,24 +21,14 @@
       "id": 4
     },
     {
-      "name": "Katlego Thobye",
-      "number": "098-745-8376",
-      "id": 5
-    },
-    {
       "name": "Banu Bashikwembu",
-      "number": "075-876-0777",
-      "id": 6
-    },
-    {
-      "name": "David Copperfield",
-      "number": "098-657-6623",
-      "id": 7
-    },
-    {
-      "name": "Asparagus Invictus",
-      "number": "089-034-7563",
+      "number": "095-736-7438",
       "id": 8
+    },
+    {
+      "name": "Katlego Thobye",
+      "number": "094-336-6843",
+      "id": 9
     }
   ]
 }
