@@ -1,0 +1,27 @@
+.country-list-item {
+    border: 1px solid black;
+    width: fit-content;
+    padding: 7.5px;
+    margin: 10px;
+}
+
+.notification {
+    background-color: black;
+}
+
+.update {
+    color: green
+}
+
+.error {
+    color: red;
+}
+
+.country-flag {
+    max-width:200px;
+    box-shadow: 2px 2px 2px;
+}
+
+.coat-of-arms {
+    max-width: 200px;
+}

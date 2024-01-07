@@ -1,65 +1,8 @@
 import { useState, useEffect } from 'react'
 import countryServices from './services/countries'
-
-const Form = (props) => {
-  //console.log(props)
-  const {text, onSubmit, handleSearch, value} = props
-  return (
-    <>
-      <form name="country-search" onSubmit={onSubmit}>
-        <input name="search"
-          value={value}
-          type="text"
-          onChange={handleSearch}/>
-          <button type="submit">
-            {text}
-        </button>
-      </form>
-    </>
-  )
-}
-
-const Country = (props) => {
-  console.log(props)
-  const {names} = props
-  return (
-    <div>
-      {names.common}
-    </div>
-  )
-}
-
-const Display = (props) => {
-  //console.log(props) 
-  const filter = props.input
-  console.log(filter.length)
-  if (filter.length === 0 || filter.length > 10) {
-    return (
-      <>
-        <p>{filter.length} potential matches</p>
-      </>
-    )
-  } else if (filter.length === 1) {
-    
-    return (
-      <>
-      </>
-    )
-  } else {
-    return(
-      <>
-        <h3>Matches</h3>
-          {filter.map(country => 
-            <Country
-              key={country.id} 
-              names={country} 
-        />)}
-      </>
-    )
-    
-  }
-}
-
+import Display from './components/Display'
+import Notification from './components/Notification'
+import Form from './components/Form'
 
 function App() {
   const [countries, setCountries] = useState([])
@@ -70,55 +13,79 @@ function App() {
     type:null
   })
   
+  // grabs all countries 
   const hookAll = () => {
     countryServices
     .getAll()
-    .then(allCountries => {
-      console.log('promise fulfilled')
-      console.log(allCountries)
-      setCountries(allCountries)
+    .then(countries => {
+      console.log('loading countries...')
+      //console.log(countries.data)
+      const data = countries.data.map((c, index) => {
+        const nameObject = {id:index+1, ...c} 
+        return nameObject
+      })
+      //console.log(data)
+      setCountries(data)
+    })
+    .catch(error => {
+      console.log(error)
+      const errorObject = {
+        content: `Unable to retrieve country data for. 
+        Check your connection and try again`,
+        type: 0
+      }
+      setNotification(errorObject)
+      setTimeout(() => {
+        setNotification({
+          content: null,
+          type: null
+        })
+      }, 5000)
     })
   }
+  useEffect(hookAll, [])  
 
-  useEffect(hookAll, [])
-
-  const hookOne =() => {
-    console.log('effect run, country is now', country)
-
-    // skip if currency is not defined
-    if (country) {
-      console.log('fetching country data...')
-      axios
-        .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${country}`)
-        .then(response => {
-          setCountry(response.data.name.common)
-        })
-    }
-  }
-
-  useEffect(hookOne,[country])
-
+  // updates state of the app according to the search value upon input change
   const handleSearchInput = (event) => {
     //console.log(event.target.value)
     setNewSearch(event.target.value)
+   
   }
 
+  // prevents page reloading on search button click
+  // sets the country to the value of the search state
   const onSearchClick = (event) => {
     event.preventDefault()
-    setCountry(newSearch)
+    const result =  newSearch.toLowerCase() 
+    setCountry(result)
   }
 
-  const nameFilter = (country, search) => {
-    const {common, official} = country
-    return (common.includes(search) || official.includes(search))
-  }
+  // filters list of countries by search input
+  // compares input to lowercase common and official names
 
-  const CountriesToShow = (newSearch.length > 0) 
+  const nameFilter = (result, search) => {
+    const {name} = result
+    return (
+      name.common.toLowerCase().includes(search) || 
+      name.official.toLowerCase().includes(search))
+  }
+  
+  // ternery applying nameFilter function
+  const countriesFilter = (newSearch.length > 0) 
   ? countries.filter(c => nameFilter(c, newSearch))
   : countries
+    
+  if (countriesFilter.length === 1) {
+    
+    console.log(countriesFilter[0].name)
+    //const result = countriesFilter[0].common.toLowerCase()
+    //setCountry(result)  
+  } 
 
   return (
     <>
+      <h1>Search A Country</h1>
+      <Notification message={newNotification}/>
       <Form 
         text="search"
         onSubmit={onSearchClick}
@@ -126,7 +93,7 @@ function App() {
         value={newSearch}
       />
       <Display
-        input={CountriesToShow}
+        list={countriesFilter}
       />
     </>
   )
