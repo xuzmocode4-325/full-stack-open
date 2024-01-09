@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import weatherServices from './services/weather'
 import countryServices from './services/countries'
 import Display from './components/Display'
 import Notification from './components/Notification'
@@ -45,9 +46,15 @@ function App() {
   }
   useEffect(hookAll, [])  
 
+  const getWeatherData = (capital) => {
+    weatherServices
+    .fetchGeoData
+  }
+
   // updates state of the app according to the search value upon input change
   const handleSearchInput = (event) => {
     //console.log(event.target.value)
+    setCountry(null)
     setNewSearch(event.target.value)
    
   }
@@ -58,6 +65,12 @@ function App() {
     event.preventDefault()
     const result =  newSearch.toLowerCase() 
     setCountry(result)
+  }
+
+  const onCountryClick = (name) => {
+    const query = name.toLowerCase()
+    console.log("clicked for", query)
+    setCountry(query)
   }
 
   // filters list of countries by search input
@@ -71,20 +84,23 @@ function App() {
   }
   
   // ternery applying nameFilter function
-  const countriesFilter = (newSearch.length > 0) 
-  ? countries.filter(c => nameFilter(c, newSearch))
-  : countries
-    
-  if (countriesFilter.length === 1) {
-    
-    console.log(countriesFilter[0].name)
-    //const result = countriesFilter[0].common.toLowerCase()
-    //setCountry(result)  
-  } 
+  const makeSelection = () => {
+    const filterInput = country
+    ? country
+    : newSearch
+    console.log(filterInput)
+    const countriesFilter = (filterInput.length > 0) 
+    ? countries.filter(c => nameFilter(c, filterInput))
+    : countries
+
+    return countriesFilter
+  }
+  
+  const filteredList = makeSelection()
+  console.log(filteredList)
 
   return (
-    <>
-      <h1>Search A Country</h1>
+    <div className='main'>
       <Notification message={newNotification}/>
       <Form 
         text="search"
@@ -93,9 +109,10 @@ function App() {
         value={newSearch}
       />
       <Display
-        list={countriesFilter}
+        list={filteredList}
+        onClick={onCountryClick}
       />
-    </>
+    </div>
   )
 }
 
