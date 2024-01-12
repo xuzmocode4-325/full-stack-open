@@ -81,3 +81,17 @@
     width: fit-content;
 }
 
+.weather-div {
+    display: flex;
+    flex-direction: row;
+}
+
+.weather-icon {
+    flex: 40%;
+    max-height: 100px;
+}
+
+.weather-description {
+    flex: 60%
+}
+
