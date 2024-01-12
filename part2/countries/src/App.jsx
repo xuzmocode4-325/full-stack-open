@@ -9,6 +9,8 @@ function App() {
   const [countries, setCountries] = useState([])
   const [newSearch, setNewSearch] = useState('')
   const [country, setCountry] = useState(null)
+  const [capital, setCapital] = useState(null)
+  const [weather, setWeather] = useState([])
   const [newNotification, setNotification] = useState({
     content: null, 
     type:null
@@ -16,7 +18,8 @@ function App() {
   
   // grabs all countries 
   const hookAll = () => {
-    countryServices
+    if (!countries){
+      countryServices
     .getAll()
     .then(countries => {
       console.log('loading countries...')
@@ -43,18 +46,24 @@ function App() {
         })
       }, 5000)
     })
+    }
   }
   useEffect(hookAll, [])  
 
-  const getWeatherData = (capital) => {
+  const hookWeatherData = () => {
+    if (capital)
     weatherServices
-    .fetchGeoData
+    .fetchGeoData(capital)
+    .then(data => console.log(data))
   }
+
+  useEffect(hookWeatherData, [])
 
   // updates state of the app according to the search value upon input change
   const handleSearchInput = (event) => {
     //console.log(event.target.value)
     setCountry(null)
+    setCapital(null)
     setNewSearch(event.target.value)
    
   }
@@ -63,14 +72,18 @@ function App() {
   // sets the country to the value of the search state
   const onSearchClick = (event) => {
     event.preventDefault()
-    const result =  newSearch.toLowerCase() 
-    setCountry(result)
+    setNewSearch(event.target.value)
   }
 
-  const onCountryClick = (name) => {
-    const query = name.toLowerCase()
-    console.log("clicked for", query)
-    setCountry(query)
+  const onCountryClick = (name, code, capital) => {
+    if (!country) {
+      const countryQuery = name.toLowerCase()
+      const capitalQuery = capital
+      console.log("clicked for", name)
+      setCountry(countryQuery)
+      setCapital(capitalQuery)
+    }
+    
   }
 
   // filters list of countries by search input
@@ -87,8 +100,8 @@ function App() {
   const makeSelection = () => {
     const filterInput = country
     ? country
-    : newSearch
-    console.log(filterInput)
+    : newSearch.toLowerCase()
+    //console.log(filterInput)
     const countriesFilter = (filterInput.length > 0) 
     ? countries.filter(c => nameFilter(c, filterInput))
     : countries
@@ -97,7 +110,7 @@ function App() {
   }
   
   const filteredList = makeSelection()
-  console.log(filteredList)
+  //console.log(filteredList)
 
   return (
     <div className='main'>
@@ -109,9 +122,11 @@ function App() {
         value={newSearch}
       />
       <Display
+        countries={countries}
         list={filteredList}
         onClick={onCountryClick}
       />
+     
     </div>
   )
 }
