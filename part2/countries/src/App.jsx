@@ -122,7 +122,7 @@ function App() {
     console.log("clicked for", name)
     if (!appState.country) {
       const newCountry = name.toLowerCase()
-      const newCapital = capCity
+      const newCapital = capCity[0]
       setAppState((prevState) => ({
         ...prevState, 
         country: newCountry,

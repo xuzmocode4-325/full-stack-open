@@ -1,13 +1,12 @@
 import InfoComponent from "./InfoComponent"
 
 const Country = (props) => {
-    //console.log(props)
     const {names, capitals, onClick} = props
     const name = names.common
-    const capital = capitals[0]
+    console.log("capitals", capitals)
     return (
       <div className="country-list-item">
-        <button onClick={() => onClick(name, capital)} className="fill-div">
+        <button onClick={() => onClick(name, capitals)} className="fill-div">
           {names.common}
         </button>
       </div>
@@ -46,7 +45,8 @@ const Display = (props) => {
       )
     } else if (list.length === 1) {
       const {name, capital} = list[0]
-      onClick(name.common, capital[0])
+      console.log(capital)
+      onClick(name.common, capital)
 
       return(
         <InfoComponent data={list[0]} conditions={weather}/>
