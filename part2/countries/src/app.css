@@ -38,15 +38,18 @@
 }
 
 .notification {
-    background-color: black;
+    background-color: rgb(147, 147, 147);
+    border-radius: 5px;
 }
 
 .update {
-    color: green
+    color: green;
+    border: 2px solid green;
 }
 
 .error {
     color: red;
+    border: 2px solid red;
 }
 
 .country-flag {
