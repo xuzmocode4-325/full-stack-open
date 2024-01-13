@@ -1,19 +1,26 @@
 const Weather = (props) => {
-    const iconUrl = {}
+    console.log(props)
+    const {main, weather, wind} = props.input
+    const tempC = (main.temp -273.15).toFixed(2)
+    const tempF = ((tempC * 9/5) + 32).toFixed(2) 
+    const iconCode = weather[0].icon
+    const windInfo = (wind.speed > 0) ? `${wind.speed} m/s` : "none"
+    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`
     return (
       <div className="weather-div">
         <img className="weather-icon" src={iconUrl}/>
         <div className="weather-description">
-          <p>temp: {null}</p>
-          <p>wind: {null}</p>
-          <p>conditions: {null}</p>
+          <p>{weather[0].description}</p>
+          <p>temp: {tempC}°C / {tempF}°F </p>
+          <p>wind: {windInfo}</p>
+          
         </div>
       </div>
     )
 }
 
-const InfoTable = (props) => {
-    const {data} = props
+const InfoComponent = (props) => {
+    const {data, conditions} = props
     //console.log(data)
     String.prototype.toProperCase = function () {
       return this.replace(/\w\S*/g, 
@@ -86,7 +93,7 @@ const InfoTable = (props) => {
           <td colSpan="2"><strong>Weather In {capital[0]}</strong></td>
         </tr>
         <tr>
-          <td colSpan="2"><Weather/></td>
+          <td colSpan="2"><Weather input={conditions}/></td>
         </tr>
       </tbody>
       {/* You can add a tfoot section here if needed */}
@@ -95,4 +102,4 @@ const InfoTable = (props) => {
     )
   }
 
-  export default InfoTable;
+  export default InfoComponent;

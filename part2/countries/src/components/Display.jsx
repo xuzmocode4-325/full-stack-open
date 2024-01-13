@@ -1,4 +1,4 @@
-import InfoTable from "./InfoTable"
+import InfoComponent from "./InfoComponent"
 
 const Country = (props) => {
     //console.log(props)
@@ -15,7 +15,7 @@ const Country = (props) => {
 }
 
 const Display = (props) => {
-    const {countries, list, onClick} = props
+    const {countries, list, weather, onClick} = props
     if (countries.length === 0) {
       return (
         <div className="results">
@@ -47,8 +47,9 @@ const Display = (props) => {
     } else if (list.length === 1) {
       const {name, capital} = list[0]
       onClick(name.common, capital[0])
+
       return(
-        <InfoTable data={list[0]}/>
+        <InfoComponent data={list[0]} conditions={weather}/>
       )
     } else {
       return(

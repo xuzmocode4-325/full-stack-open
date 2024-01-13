@@ -5,33 +5,82 @@ import Display from './components/Display'
 import Form from './components/Form'
 
 function App() {
-  const [countries, setCountries] = useState([])
-  const [newSearch, setNewSearch] = useState('')
-  const [country, setCountry] = useState(null)
-  const [capital, setCapital] = useState(null)
-  const [cityLocation, setCityLocation] = useState({
-    latitude:null,
-    longitude:null,
-  })
-  const [currentWeather, setCurrentWeather] = useState([])
-  const [newNotification, setNotification] = useState({
-    content: null, 
-    type:null
-  })
+  const [appState, setAppState] = useState({
+    countries: [],
+    newSearch: '',
+    country: null,
+    capital: null,
+    currentWeather: null,
+    cityLocation: {
+      latitude: 0,
+      longitude: 0,
+    },
+    newNotification: {
+      content: null,
+      type: null,
+    },
+  });
   
+  const handleApiError = (error, message) => {
+    console.log(error);
+    const errorObject = {
+      content: message,
+      type: 0,
+    };
+    setAppState((prevState) => ({ ...prevState, newNotification: errorObject }));
+    setTimeout(() => {
+      setAppState((prevState) => ({ ...prevState, newNotification: { content: null, type: null } }));
+    }, 15000);
+  };
+
+  const getLocation = async () => {
+    if (appState.country) {
+      try {
+        const data = await weatherServices.fetchGeoData(appState.capital);
+        const result = data[0];
+        const { lat, lon } = result;
+        const location = {
+          latitude: lat.toFixed(2),
+          longitude: lon.toFixed(2),
+        };
+        setAppState((prevState) => ({ ...prevState, cityLocation: location }));
+      } catch (error) {
+        handleApiError(error, 'Error getting coordinates. Check your connection and try again');
+      }
+    }
+  };
+
+  const getWeather = async () => {
+    if (appState.cityLocation) {
+      try {
+        const result = await weatherServices.fetchWeather(appState.cityLocation);
+        setAppState((prevState) => ({ ...prevState, currentWeather: result }));
+        //console.log(appState.currentWeather)
+      } catch (error) {
+        handleApiError(error, 'Error getting weather data. Check your connection and try again');
+      }
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, [appState.newSearch, appState.country]);
+
+  useEffect(() => {
+    getWeather();
+  }, [appState.cityLocation]);
+
   // grabs all countries 
   const hookAll = () => {
       countryServices
     .getAll()
-    .then(countries => {
-      console.log('loading countries...')
-      //console.log(countries.data)
-      const data = countries.data.map((c, index) => {
-        const nameObject = {id:index+1, ...c} 
-        return nameObject
-      })
-      //console.log(data)
-      setCountries(data)
+    .then((countries) => {
+      console.log('loading countries...');
+      const data = countries.data.map((c, index) => ({
+        id: index + 1,
+        ...c,
+      }));
+      setAppState((prevState) => ({ ...prevState, countries: data }));
     })
     .catch(error => {
       console.log(error)
@@ -46,88 +95,44 @@ function App() {
           content: null,
           type: null
         })
-      }, 5000)
+      }, 15000)
     })
   }
   useEffect(hookAll, [])  
-
-  const getLocation = () => {
-      console.log("getting cordinates...")
-      weatherServices
-      .fetchGeoData(capital)
-      .then(data => data[0])
-      .then(result => {
-       console.log(result)
-       const {lat, lon} = result
-        const location = {
-          latitude: lat.toFixed(2), 
-          longitude: lon.toFixed(2)} 
-        console.log(location)
-        setCityLocation(location)
-      })
-      .catch(error => console.log(error))
-  }
-
-  const getWeather = () => {
-    console.log("getting weather...")
-    weatherServices
-    .fetchWeather(cityLocation)
-    .then(data => {
-        console(data)
-        const {main, weather, wind} = data
-        setCurrentWeather(data)
-      })
-      .catch(error => {
-        console.log(error)
-        const errorObject = {
-          content: `Unable to retrieve weather data. 
-          Please check your connection and try again`,
-          type: 0
-        }
-        setNotification(errorObject)
-        setTimeout(() => {
-          setNotification({
-            content: null,
-            type: null
-          })
-        }, 5000)
-    })
-    
-  }
  
   // updates state of the app according to the search value upon input change
   const handleSearchInput = (event) => {
-    //console.log(event.target.value)
-    setCountry(null)
-    setCapital(null)
-    setCityLocation(null)
-    setCurrentWeather(null)
-    setNewSearch(event.target.value)
-   
-  }
-
+    setAppState((prevState) => ({
+      ...prevState,
+      country: null,
+      capital: null,
+      cityLocation: null,
+      currentWeather: null,
+      newSearch: event.target.value,
+    }));
+  };
   // prevents page reloading on search button click
   // sets the country to the value of the search state
   const onSearchClick = (event) => {
     event.preventDefault()
-    setNewSearch(event.target.value)
+    setAppState(prevState => ({...prevState, newSearch: event.target.value}))
   }
 
   const onCountryClick = (name, capCity) => {
-    if (!country) {
-      console.log("clicked for", name)
-      setCountry(name.toLowerCase())
-      setCapital(capCity)
-      console.log("name: ", country, "capital: ", capital)
-      getLocation()
-      if (!currentWeather) {
-        getWeather()
-      } 
+    console.log("clicked for", name)
+    if (!appState.country) {
+      const newCountry = name.toLowerCase()
+      const newCapital = capCity
+      setAppState((prevState) => ({
+        ...prevState, 
+        country: newCountry,
+        capital: newCapital}))
     }
-    
+    console.log(
+      "country:", appState.country, 
+      "capital:", appState.capital
+    )
   }
-
-  
 
   // filters list of countries by search input
   // compares input to lowercase common and official names
@@ -141,13 +146,13 @@ function App() {
   
   // ternery applying nameFilter function
   const makeSelection = () => {
-    const filterInput = country
-    ? country
-    : newSearch.toLowerCase()
+    const filterInput = appState.country
+    ? appState.country
+    : appState.newSearch.toLowerCase()
     //console.log(filterInput)
     const countriesFilter = (filterInput.length > 0) 
-    ? countries.filter(c => nameFilter(c, filterInput))
-    : countries
+    ? appState.countries.filter(c => nameFilter(c, filterInput))
+    : appState.countries
 
     return countriesFilter
   }
@@ -158,21 +163,23 @@ function App() {
  
   return (
     <div className='main'>
-      <Form 
-        text="search"
-        onSubmit={onSearchClick}
-        handleSearch={handleSearchInput}
-        value={newSearch}
-        message={newNotification}
-      />
-      <Display
-        countries={countries}
-        list={filteredList}
-        onClick={onCountryClick}
-      />
-     
+      {//appState.newNotification.content && (
+        <Form
+          text="search"
+          onSubmit={onSearchClick}
+          handleSearch={handleSearchInput}
+          value={appState.newSearch}
+          message={appState.newNotification}
+        />
+      //)
+      } 
+      <Display 
+        countries={appState.countries} 
+        list={filteredList} 
+        weather={appState.currentWeather}
+        onClick={onCountryClick} />
     </div>
-  )
+  );
 }
 
 export default App
