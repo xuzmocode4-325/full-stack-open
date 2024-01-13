@@ -85,17 +85,19 @@ function App() {
     .catch(error => {
       console.log(error)
       const errorObject = {
-        content: `Unable to retrieve country data for. 
-        Check your connection and try again`,
+        content: `Unable to retrieve country data for at the moment.`,
         type: 0
       }
-      setNotification(errorObject)
+      setAppState((prevState) => ({
+        ...prevState,
+        newNotification: errorObject
+      }))
       setTimeout(() => {
-        setNotification({
-          content: null,
-          type: null
-        })
-      }, 15000)
+        setAppState((prevState) => ({ 
+          ...prevState, 
+          newNotification: { content: null, type: null } }));
+      }, 15000);
+  
     })
   }
   useEffect(hookAll, [])  
@@ -122,11 +124,28 @@ function App() {
     console.log("clicked for", name)
     if (!appState.country) {
       const newCountry = name.toLowerCase()
-      const newCapital = capCity[0]
-      setAppState((prevState) => ({
-        ...prevState, 
-        country: newCountry,
-        capital: newCapital}))
+      try {
+        const newCapital = capCity[0]
+        setAppState((prevState) => ({
+          ...prevState, 
+          country: newCountry,
+          capital: newCapital}))
+      } 
+      catch {
+        const errorObject = {
+        content: `Unable to retrieve country data at the moment.`,
+        type: 1
+        }
+        setAppState((prevState) => ({
+          ...prevState,
+          newNotification: errorObject
+        }))
+        setTimeout(() => {
+          setAppState((prevState) => ({ 
+            ...prevState, 
+            newNotification: { content: null, type: null } }));
+        }, 15000);
+      }
     }
     console.log(
       "country:", appState.country, 
